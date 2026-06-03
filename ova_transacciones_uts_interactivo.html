@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OVA Interactivo - Transacciones en Bases de Datos</title>
+<style>
+:root{
+  --uts-green:#9DCC00;
+  --uts-dark:#35503A;
+  --uts-gray:#666666;
+  --uts-light:#F4F7F1;
+  --uts-white:#FFFFFF;
+  --uts-purple:#7B2CBF;
+  --danger:#D62828;
+  --ok:#2D6A4F;
+  --warning:#F4A261;
+  --shadow:0 10px 25px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;scroll-behavior:smooth}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#fff,#f5f8ef);color:#243024}
+header{background:linear-gradient(135deg,var(--uts-dark),#1f3325);color:white;padding:24px 18px;position:relative;overflow:hidden}
+header:after{content:"";position:absolute;right:-80px;top:-80px;width:250px;height:250px;border-radius:50%;background:rgba(157,204,0,.25)}
+.logoBox{display:flex;align-items:center;gap:20px;max-width:1150px;margin:auto;position:relative;z-index:2}
+.logo{background:white;border-radius:18px;padding:12px;width:170px;box-shadow:var(--shadow)}
+h1{margin:0;font-size:32px}.subtitle{font-size:17px;margin-top:8px;color:#e9f5d3}.tag{display:inline-block;background:var(--uts-green);color:#243024;padding:7px 12px;border-radius:20px;font-weight:bold;margin-top:12px}
+nav{position:sticky;top:0;background:white;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:10px;text-align:center}
+nav button{border:0;background:var(--uts-dark);color:white;margin:4px;padding:10px 14px;border-radius:20px;cursor:pointer;font-weight:bold}nav button:hover{background:var(--uts-green);color:#243024}
+.container{max-width:1150px;margin:auto;padding:22px}.card{background:white;border-radius:18px;padding:22px;margin:18px 0;box-shadow:var(--shadow);border-left:7px solid var(--uts-green)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.mini{background:var(--uts-light);padding:18px;border-radius:16px;border:1px solid #dce7d5}.mini h3{margin-top:0;color:var(--uts-dark)}
+.timeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.time{background:#fff;border:2px solid var(--uts-green);border-radius:15px;padding:13px;text-align:center}.time strong{display:block;color:var(--uts-dark);font-size:20px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}.tab{border:0;padding:11px 16px;border-radius:14px;cursor:pointer;background:#e7eddc;font-weight:bold}.tab.active{background:var(--uts-green);color:#1d2b1f}
+.panel{display:none}.panel.active{display:block;animation:fade .35s}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.stepList{display:flex;flex-direction:column;gap:10px}.stepBtn{width:100%;text-align:left;border:1px solid #d8e5cb;background:#fff;border-radius:14px;padding:14px;cursor:pointer;font-size:15px}.stepBtn:hover,.stepBtn.active{background:var(--uts-green);color:#243024;font-weight:bold}
+.codeBox{background:#16231a;color:#e7ffe2;border-radius:16px;padding:16px;overflow:auto;min-height:150px;white-space:pre-wrap;font-family:Consolas,monospace;font-size:14px}.copy{background:var(--uts-green);border:0;padding:9px 13px;border-radius:10px;cursor:pointer;font-weight:bold;margin-top:10px}
+.simulator{background:linear-gradient(135deg,#edf6df,#fff);border:2px dashed var(--uts-green);border-radius:20px;padding:20px}.accounts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}.account{background:white;border-radius:16px;padding:18px;text-align:center;box-shadow:var(--shadow)}.money{font-size:30px;font-weight:bold;color:var(--uts-dark)}
+.actions button{border:0;margin:8px 5px;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:bold}.begin{background:#4361ee;color:white}.commit{background:var(--ok);color:white}.rollback{background:var(--danger);color:white}.save{background:var(--warning);color:#222}.reset{background:#777;color:white}
+.log{background:#111;color:#d9ffd0;border-radius:14px;padding:14px;min-height:130px;font-family:Consolas,monospace;white-space:pre-wrap;margin-top:12px}
+.quizQ{background:var(--uts-light);border-radius:14px;padding:15px;margin:12px 0}.quizQ button{display:block;width:100%;margin:7px 0;padding:10px;border:1px solid #cad7c2;border-radius:10px;background:white;text-align:left;cursor:pointer}.quizQ button.correct{background:#c8f7c5}.quizQ button.wrong{background:#ffd1d1}
+table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden}th{background:var(--uts-dark);color:white}td,th{padding:12px;border:1px solid #dde7d5;text-align:left}.highlight{background:#f1ffd5;border-left:6px solid var(--uts-green);padding:15px;border-radius:12px}.footer{text-align:center;background:var(--uts-dark);color:white;padding:20px;margin-top:30px}.badge{background:var(--uts-purple);color:white;padding:4px 8px;border-radius:8px;font-size:12px}
+@media(max-width:650px){h1{font-size:24px}.logoBox{flex-direction:column;text-align:center}.logo{width:140px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logoBox">
+    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Logo_UTS.svg/320px-Logo_UTS.svg.png" onerror="this.style.display='none'" alt="Logo UTS">
+    <div>
+      <h1>OVA Interactivo: Transacciones en Bases de Datos</h1>
+      <div class="subtitle">Materia: Motores de Bases de Datos | Profesor: Pedro Ramírez García</div>
+      <span class="tag">SQL Server + PostgreSQL | Clase taller de 1 hora y 30 minutos</span>
+    </div>
+  </div>
+</header>
+<nav>
+  <button onclick="go('inicio')">Inicio</button><button onclick="go('teoria')">Teoría</button><button onclick="go('simulador')">Simulador</button><button onclick="go('codigo')">Códigos</button><button onclick="go('quiz')">Quiz</button><button onclick="go('tarea')">Tarea</button>
+</nav>
+<main class="container">
+<section id="inicio" class="card">
+<h2>Ruta de la clase</h2><p>Esta clase se trabaja como taller: el docente explica y al mismo tiempo los estudiantes ejecutan los comandos. La idea es comprender por qué una transacción protege la información cuando una operación debe completarse totalmente o deshacerse.</p>
+<div class="timeline"><div class="time"><strong>15</strong>min<br>Concepto</div><div class="time"><strong>20</strong>min<br>ACID</div><div class="time"><strong>25</strong>min<br>Simulación</div><div class="time"><strong>25</strong>min<br>Práctica SQL</div><div class="time"><strong>5</strong>min<br>Cierre</div></div>
+</section>
+<section id="teoria" class="card"><h2>Teoría en lenguaje natural</h2><div class="grid">
+<div class="mini"><h3>¿Qué es una transacción?</h3><p>Es un conjunto de operaciones que deben ejecutarse como una sola unidad. Si todo sale bien, se confirma. Si algo falla, se devuelve todo al estado anterior.</p></div>
+<div class="mini"><h3>Ejemplo bancario</h3><p>Si se descuenta dinero de una cuenta, también debe sumarse en la otra. Si el sistema falla a la mitad, la base de datos debe deshacer la operación.</p></div>
+<div class="mini"><h3>COMMIT</h3><p>Confirma definitivamente los cambios realizados durante la transacción.</p></div>
+<div class="mini"><h3>ROLLBACK</h3><p>Cancela los cambios y regresa la información a como estaba antes.</p></div></div>
+<h3>Propiedades ACID</h3><table><tr><th>Propiedad</th><th>Significado</th><th>Explicación sencilla</th></tr><tr><td>Atomicidad</td><td>Todo o nada</td><td>No puede quedar una operación a medias.</td></tr><tr><td>Consistencia</td><td>Datos válidos</td><td>La base de datos debe quedar correcta.</td></tr><tr><td>Aislamiento</td><td>Orden</td><td>Una transacción no debe dañar otra.</td></tr><tr><td>Durabilidad</td><td>Permanencia</td><td>Lo confirmado queda guardado.</td></tr></table></section>
+<section id="simulador" class="card"><h2>Simulador visual: transferencia bancaria</h2><p>Use los botones para mostrar qué pasa con <b>BEGIN</b>, <b>COMMIT</b> y <b>ROLLBACK</b>.</p><div class="simulator"><div class="accounts"><div class="account"><h3>Cuenta A</h3><div class="money" id="cuentaA">$1.000.000</div></div><div class="account"><h3>Cuenta B</h3><div class="money" id="cuentaB">$200.000</div></div></div><div class="actions"><button class="begin" onclick="beginTx()">1. BEGIN</button><button class="save" onclick="transferir()">2. Ejecutar transferencia</button><button class="commit" onclick="commitTx()">3. COMMIT</button><button class="rollback" onclick="rollbackTx()">ROLLBACK</button><button class="reset" onclick="resetSim()">Reiniciar</button></div><div class="log" id="simLog">Listo para iniciar la transacción...</div></div></section>
+<section id="codigo" class="card"><h2>Práctica guiada con código</h2><p>Seleccione el motor y el paso. El código aparece al lado para copiarlo y ejecutarlo.</p><div class="tabs"><button class="tab active" onclick="selectEngine('pg')">PostgreSQL</button><button class="tab" onclick="selectEngine('sql')">SQL Server</button></div><div class="grid"><div><div id="stepButtons" class="stepList"></div></div><div><h3 id="codeTitle">Código</h3><pre id="codeArea" class="codeBox"></pre><button class="copy" onclick="copyCode()">Copiar código</button><p id="copyMsg"></p></div></div></section>
+<section id="quiz" class="card"><h2>Mini quiz interactivo</h2><div class="quizQ"><b>1. ¿Qué comando confirma los cambios?</b><button onclick="answer(this,true)">COMMIT</button><button onclick="answer(this,false)">ROLLBACK</button><button onclick="answer(this,false)">SELECT</button></div><div class="quizQ"><b>2. ¿Qué significa atomicidad?</b><button onclick="answer(this,false)">Que los datos se ordenan alfabéticamente.</button><button onclick="answer(this,true)">Que la operación se hace completa o no se hace.</button><button onclick="answer(this,false)">Que solo se puede usar una tabla.</button></div><div class="quizQ"><b>3. ¿Para qué sirve ROLLBACK?</b><button onclick="answer(this,true)">Para deshacer cambios no confirmados.</button><button onclick="answer(this,false)">Para crear una tabla.</button><button onclick="answer(this,false)">Para consultar registros.</button></div></section>
+<section id="tarea" class="card"><h2>Aplicación al proyecto</h2><div class="highlight"><p><b>Para casa:</b> cada grupo debe identificar una operación crítica de su proyecto y protegerla con una transacción.</p></div><table><tr><th>Debe entregar</th><th>Descripción</th></tr><tr><td>Escenario crítico</td><td>Ejemplo: venta, matrícula, pago, reserva, comparendo, cita, préstamo.</td></tr><tr><td>Transacción</td><td>Uso de BEGIN, COMMIT y ROLLBACK.</td></tr><tr><td>Prueba exitosa</td><td>Mostrar que los datos se guardan correctamente.</td></tr><tr><td>Prueba fallida</td><td>Mostrar que los datos se revierten.</td></tr><tr><td>Explicación</td><td>Indicar cómo protege la integridad de la base de datos.</td></tr></table><p><b>Frase de cierre:</b> “Una base de datos profesional no solo guarda datos; también protege la consistencia de la información.”</p></section>
+</main><div class="footer">Unidades Tecnológicas de Santander — Motores de Bases de Datos — Profesor Pedro Ramírez García</div>
+<script>
+function go(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
+let a0=1000000,b0=200000,a=a0,b=b0,started=false,changed=false,committed=false;
+function money(n){return '$'+n.toLocaleString('es-CO');}
+function updateMoney(){document.getElementById('cuentaA').textContent=money(a);document.getElementById('cuentaB').textContent=money(b);}
+function log(t){document.getElementById('simLog').textContent=t;}
+function beginTx(){started=true;changed=false;committed=false; a=a0;b=b0;updateMoney();log('BEGIN;\nSe inicia la transacción. Aún no hay cambios confirmados.');}
+function transferir(){if(!started){log('Primero debe iniciar con BEGIN.');return;} a-=300000;b+=300000;changed=true;updateMoney();log('UPDATE cuenta_origen SET saldo = saldo - 300000;\nUPDATE cuenta_destino SET saldo = saldo + 300000;\nLa transferencia está pendiente de COMMIT o ROLLBACK.');}
+function commitTx(){if(!started||!changed){log('No hay una transacción con cambios para confirmar.');return;} a0=a;b0=b;committed=true;started=false;log('COMMIT;\nLos cambios quedaron confirmados definitivamente.');}
+function rollbackTx(){if(!started){log('No hay transacción activa para deshacer.');return;} a=a0;b=b0;updateMoney();started=false;changed=false;log('ROLLBACK;\nLos cambios fueron cancelados. Las cuentas regresan al estado anterior.');}
+function resetSim(){a0=1000000;b0=200000;a=a0;b=b0;started=false;changed=false;committed=false;updateMoney();log('Simulador reiniciado. Listo para iniciar la transacción...');}
+const codes={
+pg:[
+['1. Crear tablas',`CREATE TABLE cuentas (\n    id_cuenta SERIAL PRIMARY KEY,\n    titular VARCHAR(100),\n    saldo NUMERIC(12,2)\n);\n\nINSERT INTO cuentas (titular, saldo) VALUES\n('Carlos', 1000000),\n('María', 200000);\n\nSELECT * FROM cuentas;`],
+['2. Transacción exitosa',`BEGIN;\n\nUPDATE cuentas\nSET saldo = saldo - 300000\nWHERE id_cuenta = 1;\n\nUPDATE cuentas\nSET saldo = saldo + 300000\nWHERE id_cuenta = 2;\n\nCOMMIT;\n\nSELECT * FROM cuentas;`],
+['3. Transacción con ROLLBACK',`BEGIN;\n\nUPDATE cuentas\nSET saldo = saldo - 500000\nWHERE id_cuenta = 1;\n\n-- Simulamos un error o decisión de cancelar\nROLLBACK;\n\nSELECT * FROM cuentas;`],
+['4. SAVEPOINT',`BEGIN;\n\nUPDATE cuentas SET saldo = saldo - 100000 WHERE id_cuenta = 1;\nSAVEPOINT punto_1;\n\nUPDATE cuentas SET saldo = saldo - 900000 WHERE id_cuenta = 1;\n\nROLLBACK TO punto_1;\nCOMMIT;\n\nSELECT * FROM cuentas;`]
+],
+sql:[
+['1. Crear tablas',`CREATE TABLE cuentas (\n    id_cuenta INT IDENTITY(1,1) PRIMARY KEY,\n    titular VARCHAR(100),\n    saldo DECIMAL(12,2)\n);\n\nINSERT INTO cuentas (titular, saldo) VALUES\n('Carlos', 1000000),\n('María', 200000);\n\nSELECT * FROM cuentas;`],
+['2. Transacción exitosa',`BEGIN TRANSACTION;\n\nUPDATE cuentas\nSET saldo = saldo - 300000\nWHERE id_cuenta = 1;\n\nUPDATE cuentas\nSET saldo = saldo + 300000\nWHERE id_cuenta = 2;\n\nCOMMIT TRANSACTION;\n\nSELECT * FROM cuentas;`],
+['3. Transacción con ROLLBACK',`BEGIN TRANSACTION;\n\nUPDATE cuentas\nSET saldo = saldo - 500000\nWHERE id_cuenta = 1;\n\n-- Simulamos error o cancelación\nROLLBACK TRANSACTION;\n\nSELECT * FROM cuentas;`],
+['4. TRY CATCH',`BEGIN TRY\n    BEGIN TRANSACTION;\n\n    UPDATE cuentas SET saldo = saldo - 300000 WHERE id_cuenta = 1;\n    UPDATE cuentas SET saldo = saldo + 300000 WHERE id_cuenta = 2;\n\n    COMMIT TRANSACTION;\nEND TRY\nBEGIN CATCH\n    ROLLBACK TRANSACTION;\n    PRINT 'Error: se deshizo la transacción';\nEND CATCH;`]
+]
+};
+let engine='pg';
+function selectEngine(e){engine=e;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));event.target.classList.add('active');renderSteps();}
+function renderSteps(){const box=document.getElementById('stepButtons');box.innerHTML='';codes[engine].forEach((c,i)=>{let b=document.createElement('button');b.className='stepBtn';b.textContent=c[0];b.onclick=()=>showCode(i,b);box.appendChild(b);});showCode(0,box.firstChild);}
+function showCode(i,btn){document.querySelectorAll('.stepBtn').forEach(x=>x.classList.remove('active')); if(btn)btn.classList.add('active');document.getElementById('codeTitle').textContent=codes[engine][i][0];document.getElementById('codeArea').textContent=codes[engine][i][1];document.getElementById('copyMsg').textContent='';}
+function copyCode(){navigator.clipboard.writeText(document.getElementById('codeArea').textContent).then(()=>{document.getElementById('copyMsg').textContent='Código copiado.'}).catch(()=>{document.getElementById('copyMsg').textContent='Seleccione y copie manualmente.'});}
+function answer(btn,ok){const q=btn.parentElement; q.querySelectorAll('button').forEach(b=>b.disabled=true);btn.classList.add(ok?'correct':'wrong'); if(!ok){q.querySelectorAll('button').forEach(b=>{if(b.onclick.toString().includes('true')) b.classList.add('correct')})}}
+renderSteps();updateMoney();
+</script>
+</body>
+</html>
