@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>OVA Interactivo - Transacciones en Bases de Datos</title>
+<title>OVA Taller Interactivo - Transacciones PostgreSQL y MySQL</title>
 <style>
 :root{
   --uts-green:#9DCC00;
@@ -11,98 +11,414 @@
   --uts-gray:#666666;
   --uts-light:#F4F7F1;
   --uts-white:#FFFFFF;
-  --uts-purple:#7B2CBF;
-  --danger:#D62828;
-  --ok:#2D6A4F;
-  --warning:#F4A261;
-  --shadow:0 10px 25px rgba(0,0,0,.12);
+  --uts-line:#DDE8D6;
+  --ink:#1C2B22;
+  --danger:#C62828;
+  --warning:#F4A621;
+  --ok:#2E7D32;
+  --blue:#1E5AA8;
+  --code:#0E1B12;
+  --code2:#14251A;
 }
 *{box-sizing:border-box;scroll-behavior:smooth}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#fff,#f5f8ef);color:#243024}
-header{background:linear-gradient(135deg,var(--uts-dark),#1f3325);color:white;padding:24px 18px;position:relative;overflow:hidden}
-header:after{content:"";position:absolute;right:-80px;top:-80px;width:250px;height:250px;border-radius:50%;background:rgba(157,204,0,.25)}
-.logoBox{display:flex;align-items:center;gap:20px;max-width:1150px;margin:auto;position:relative;z-index:2}
-.logo{background:white;border-radius:18px;padding:12px;width:170px;box-shadow:var(--shadow)}
-h1{margin:0;font-size:32px}.subtitle{font-size:17px;margin-top:8px;color:#e9f5d3}.tag{display:inline-block;background:var(--uts-green);color:#243024;padding:7px 12px;border-radius:20px;font-weight:bold;margin-top:12px}
-nav{position:sticky;top:0;background:white;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:10px;text-align:center}
-nav button{border:0;background:var(--uts-dark);color:white;margin:4px;padding:10px 14px;border-radius:20px;cursor:pointer;font-weight:bold}nav button:hover{background:var(--uts-green);color:#243024}
-.container{max-width:1150px;margin:auto;padding:22px}.card{background:white;border-radius:18px;padding:22px;margin:18px 0;box-shadow:var(--shadow);border-left:7px solid var(--uts-green)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.mini{background:var(--uts-light);padding:18px;border-radius:16px;border:1px solid #dce7d5}.mini h3{margin-top:0;color:var(--uts-dark)}
-.timeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.time{background:#fff;border:2px solid var(--uts-green);border-radius:15px;padding:13px;text-align:center}.time strong{display:block;color:var(--uts-dark);font-size:20px}
-.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}.tab{border:0;padding:11px 16px;border-radius:14px;cursor:pointer;background:#e7eddc;font-weight:bold}.tab.active{background:var(--uts-green);color:#1d2b1f}
-.panel{display:none}.panel.active{display:block;animation:fade .35s}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.stepList{display:flex;flex-direction:column;gap:10px}.stepBtn{width:100%;text-align:left;border:1px solid #d8e5cb;background:#fff;border-radius:14px;padding:14px;cursor:pointer;font-size:15px}.stepBtn:hover,.stepBtn.active{background:var(--uts-green);color:#243024;font-weight:bold}
-.codeBox{background:#16231a;color:#e7ffe2;border-radius:16px;padding:16px;overflow:auto;min-height:150px;white-space:pre-wrap;font-family:Consolas,monospace;font-size:14px}.copy{background:var(--uts-green);border:0;padding:9px 13px;border-radius:10px;cursor:pointer;font-weight:bold;margin-top:10px}
-.simulator{background:linear-gradient(135deg,#edf6df,#fff);border:2px dashed var(--uts-green);border-radius:20px;padding:20px}.accounts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px}.account{background:white;border-radius:16px;padding:18px;text-align:center;box-shadow:var(--shadow)}.money{font-size:30px;font-weight:bold;color:var(--uts-dark)}
-.actions button{border:0;margin:8px 5px;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:bold}.begin{background:#4361ee;color:white}.commit{background:var(--ok);color:white}.rollback{background:var(--danger);color:white}.save{background:var(--warning);color:#222}.reset{background:#777;color:white}
-.log{background:#111;color:#d9ffd0;border-radius:14px;padding:14px;min-height:130px;font-family:Consolas,monospace;white-space:pre-wrap;margin-top:12px}
-.quizQ{background:var(--uts-light);border-radius:14px;padding:15px;margin:12px 0}.quizQ button{display:block;width:100%;margin:7px 0;padding:10px;border:1px solid #cad7c2;border-radius:10px;background:white;text-align:left;cursor:pointer}.quizQ button.correct{background:#c8f7c5}.quizQ button.wrong{background:#ffd1d1}
-table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden}th{background:var(--uts-dark);color:white}td,th{padding:12px;border:1px solid #dde7d5;text-align:left}.highlight{background:#f1ffd5;border-left:6px solid var(--uts-green);padding:15px;border-radius:12px}.footer{text-align:center;background:var(--uts-dark);color:white;padding:20px;margin-top:30px}.badge{background:var(--uts-purple);color:white;padding:4px 8px;border-radius:8px;font-size:12px}
-@media(max-width:650px){h1{font-size:24px}.logoBox{flex-direction:column;text-align:center}.logo{width:140px}}
+body{margin:0;font-family:Arial, Helvetica, sans-serif;background:linear-gradient(180deg,#f7faf4 0%,#eaf2e2 100%);color:var(--ink)}
+header{background:linear-gradient(135deg,#ffffff 0%,#f4f8ee 58%,#e3efd3 100%);border-bottom:5px solid var(--uts-green);box-shadow:0 8px 25px rgba(0,0,0,.09)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+.hero{display:grid;grid-template-columns:160px 1fr;gap:20px;align-items:center;padding:24px 0}
+.logoBox{background:white;border-radius:22px;padding:14px;box-shadow:0 10px 25px rgba(0,0,0,.12);border:1px solid var(--uts-line)}
+.logoBox img{width:100%;display:block;border-radius:12px}.badge{display:inline-block;background:var(--uts-green);color:#26351e;font-weight:800;border-radius:999px;padding:8px 14px;margin:5px 6px 5px 0;font-size:13px}.hero h1{font-size:34px;margin:6px 0;color:var(--uts-dark);line-height:1.1}.hero p{font-size:17px;color:#526354;margin:8px 0}.meta{font-weight:700;color:var(--uts-dark)}
+nav{position:sticky;top:0;background:rgba(53,80,58,.97);z-index:20;backdrop-filter:blur(8px);box-shadow:0 4px 15px rgba(0,0,0,.12)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}.navBtn{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:white;border-radius:999px;padding:10px 14px;cursor:pointer;font-weight:700;white-space:nowrap}.navBtn:hover,.navBtn.active{background:var(--uts-green);color:#203018}.progress{height:9px;background:#d9e8ce;border-radius:99px;overflow:hidden;margin:16px 0}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--uts-green),#6ea100);transition:.35s}
+main{padding:26px 0 60px}.card{background:white;border-radius:22px;padding:22px;margin:18px 0;box-shadow:0 12px 30px rgba(21,45,26,.10);border:1px solid var(--uts-line)}.card h2{margin:0 0 12px;color:var(--uts-dark);font-size:27px}.card h3{color:#2d4532;margin:14px 0 9px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.mini{background:var(--uts-light);border-left:6px solid var(--uts-green);padding:15px;border-radius:16px}.mini strong{color:var(--uts-dark)}
+.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.time{background:linear-gradient(180deg,#fff,#f3f8ee);border:1px solid var(--uts-line);border-radius:16px;padding:14px;text-align:center}.time b{display:block;font-size:24px;color:var(--uts-green);text-shadow:0 1px 0 #617d00}.callout{background:#f8fff0;border:2px dashed var(--uts-green);border-radius:18px;padding:16px;margin:16px 0}.danger{background:#fff4f3;border-color:#ffc2bd}.ok{background:#f3fff5;border-color:#bdebc6}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.buttonRow{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}.btn{border:0;border-radius:12px;padding:11px 15px;font-weight:800;cursor:pointer;background:var(--uts-dark);color:white}.btn.green{background:var(--uts-green);color:#25351f}.btn.red{background:var(--danger)}.btn.blue{background:var(--blue)}.btn.gray{background:#667064}.btn:hover{filter:brightness(.96);transform:translateY(-1px)}
+.panel{display:none}.panel.active{display:block}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.tab{border:1px solid var(--uts-line);background:#f6faf3;color:var(--uts-dark);border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:800}.tab.active{background:var(--uts-green);color:#24331f;border-color:var(--uts-green)}
+.step{border:1px solid var(--uts-line);border-radius:16px;margin:12px 0;overflow:hidden;background:white}.stepHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:#f6faf3;cursor:pointer}.stepHead h3{margin:0;font-size:18px}.num{background:var(--uts-green);color:#26351e;border-radius:50%;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;margin-right:10px}.stepBody{display:none;padding:16px}.step.open .stepBody{display:block}.hint{color:#5d6d60;font-size:14px;margin:8px 0}.codeTools{display:flex;justify-content:space-between;align-items:center;background:#0b170f;border-radius:14px 14px 0 0;color:#d8f5c6;padding:8px 12px;font-size:13px}.copy{background:var(--uts-green);color:#203018;border:0;border-radius:8px;padding:7px 10px;font-weight:800;cursor:pointer}pre{margin:0;background:var(--code);color:#e8ffe1;padding:16px;border-radius:0 0 14px 14px;overflow:auto;line-height:1.5;border:1px solid #183623;border-top:0}code{font-family:Consolas, Monaco, 'Courier New', monospace;font-size:14px}.resultBox{background:#101914;color:#d5ffd0;border-radius:14px;padding:14px;margin-top:12px;min-height:64px;border:1px solid #23452b}.fakeTable{width:100%;border-collapse:collapse;margin:12px 0;background:white;border-radius:12px;overflow:hidden}.fakeTable th{background:var(--uts-dark);color:white}.fakeTable th,.fakeTable td{border:1px solid var(--uts-line);padding:9px;text-align:left}.highlight{background:#efffdc!important}
+.sim{display:grid;grid-template-columns:1fr 1fr;gap:16px}.account{border-radius:18px;padding:18px;background:linear-gradient(180deg,#fff,#f2f7ee);border:1px solid var(--uts-line);text-align:center}.money{font-size:34px;font-weight:900;color:var(--uts-dark)}.arrow{font-size:34px;text-align:center;margin:8px}.log{background:#0e1b12;color:#eaffdf;border-radius:16px;padding:14px;min-height:170px;white-space:pre-line;font-family:Consolas,monospace}.quizQ{border:1px solid var(--uts-line);border-radius:16px;padding:15px;margin:12px 0;background:#fbfdf9}.option{display:block;margin:8px 0;padding:10px;border:1px solid #dce8d5;border-radius:12px;cursor:pointer;background:white}.option:hover{background:#f1f8eb}.option.correct{background:#e7ffe7;border-color:#5cc75c}.option.wrong{background:#ffe8e8;border-color:#dc6b6b}.checklist label{display:block;background:#f8fbf5;margin:8px 0;padding:12px;border-radius:12px;border:1px solid var(--uts-line)}textarea,input{width:100%;padding:12px;border-radius:12px;border:1px solid #cbd8c5;font-family:Arial;margin:7px 0}footer{background:var(--uts-dark);color:white;text-align:center;padding:20px;border-top:5px solid var(--uts-green)}.small{font-size:13px;color:#6a766c}.videoBox{border-radius:16px;overflow:hidden;border:1px solid var(--uts-line);background:#f5f7f3;padding:12px}.videoBox iframe{width:100%;height:260px;border:0;border-radius:12px}.pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef7e6;color:#36523a;font-weight:700;margin:4px}.toast{position:fixed;right:18px;bottom:18px;background:var(--uts-dark);color:white;border-left:6px solid var(--uts-green);padding:13px 16px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);display:none;z-index:100}.toast.show{display:block}
+@media(max-width:850px){.hero{grid-template-columns:1fr;text-align:center}.logoBox{max-width:180px;margin:auto}.grid,.timeline,.two,.sim{grid-template-columns:1fr}.hero h1{font-size:26px}.videoBox iframe{height:200px}}
 </style>
 </head>
 <body>
-<header>
-  <div class="logoBox">
-    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Logo_UTS.svg/320px-Logo_UTS.svg.png" onerror="this.style.display='none'" alt="Logo UTS">
+<header id="inicio">
+  <div class="wrap hero">
+    <div class="logoBox"><img alt="Logo UTS" src="data:image/png;base64,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" /></div>
     <div>
-      <h1>OVA Interactivo: Transacciones en Bases de Datos</h1>
-      <div class="subtitle">Materia: Motores de Bases de Datos | Profesor: Pedro Ramírez García</div>
-      <span class="tag">SQL Server + PostgreSQL | Clase taller de 1 hora y 30 minutos</span>
+      <span class="badge">OVA INTERACTIVO</span><span class="badge">Clase taller 30 a 40 min</span><span class="badge">PostgreSQL + MySQL</span>
+      <h1>Transacciones en Bases de Datos</h1>
+      <p><b>BEGIN / START TRANSACTION · COMMIT · ROLLBACK · SAVEPOINT</b></p>
+      <p class="meta">Materia: Motores de Bases de Datos | Profesor: Pedro Ramírez García</p>
+      <div class="progress" title="Progreso del OVA"><div id="bar" class="bar"></div></div>
+      <p class="small">Marque cada sección como realizada para avanzar el progreso.</p>
     </div>
   </div>
 </header>
-<nav>
-  <button onclick="go('inicio')">Inicio</button><button onclick="go('teoria')">Teoría</button><button onclick="go('simulador')">Simulador</button><button onclick="go('codigo')">Códigos</button><button onclick="go('quiz')">Quiz</button><button onclick="go('tarea')">Tarea</button>
-</nav>
-<main class="container">
-<section id="inicio" class="card">
-<h2>Ruta de la clase</h2><p>Esta clase se trabaja como taller: el docente explica y al mismo tiempo los estudiantes ejecutan los comandos. La idea es comprender por qué una transacción protege la información cuando una operación debe completarse totalmente o deshacerse.</p>
-<div class="timeline"><div class="time"><strong>15</strong>min<br>Concepto</div><div class="time"><strong>20</strong>min<br>ACID</div><div class="time"><strong>25</strong>min<br>Simulación</div><div class="time"><strong>25</strong>min<br>Práctica SQL</div><div class="time"><strong>5</strong>min<br>Cierre</div></div>
+<nav><div class="wrap">
+  <button class="navBtn active" onclick="go('inicio')">Inicio</button>
+  <button class="navBtn" onclick="go('concepto')">Concepto</button>
+  <button class="navBtn" onclick="go('simulador')">Simulador</button>
+  <button class="navBtn" onclick="go('laboratorio')">Laboratorio</button>
+  <button class="navBtn" onclick="go('quiz')">Quiz</button>
+  <button class="navBtn" onclick="go('proyecto')">Aplicación al proyecto</button>
+</div></nav>
+<main class="wrap">
+<section class="card" id="ruta">
+  <h2>Ruta de la clase de hoy</h2>
+  <p>Este OVA está diseñado para que el docente explique y los estudiantes vayan ejecutando los pasos. La práctica central dura entre <b>30 y 40 minutos</b>.</p>
+  <div class="timeline">
+    <div class="time"><b>10 min</b>Concepto de transacción y ACID</div>
+    <div class="time"><b>10 min</b>Simulador visual COMMIT / ROLLBACK</div>
+    <div class="time"><b>35 min</b>Laboratorio guiado PostgreSQL / MySQL</div>
+    <div class="time"><b>10 min</b>Aplicación al proyecto</div>
+  </div>
+  <button class="btn green" onclick="complete('ruta')">Marcar ruta como entendida</button>
 </section>
-<section id="teoria" class="card"><h2>Teoría en lenguaje natural</h2><div class="grid">
-<div class="mini"><h3>¿Qué es una transacción?</h3><p>Es un conjunto de operaciones que deben ejecutarse como una sola unidad. Si todo sale bien, se confirma. Si algo falla, se devuelve todo al estado anterior.</p></div>
-<div class="mini"><h3>Ejemplo bancario</h3><p>Si se descuenta dinero de una cuenta, también debe sumarse en la otra. Si el sistema falla a la mitad, la base de datos debe deshacer la operación.</p></div>
-<div class="mini"><h3>COMMIT</h3><p>Confirma definitivamente los cambios realizados durante la transacción.</p></div>
-<div class="mini"><h3>ROLLBACK</h3><p>Cancela los cambios y regresa la información a como estaba antes.</p></div></div>
-<h3>Propiedades ACID</h3><table><tr><th>Propiedad</th><th>Significado</th><th>Explicación sencilla</th></tr><tr><td>Atomicidad</td><td>Todo o nada</td><td>No puede quedar una operación a medias.</td></tr><tr><td>Consistencia</td><td>Datos válidos</td><td>La base de datos debe quedar correcta.</td></tr><tr><td>Aislamiento</td><td>Orden</td><td>Una transacción no debe dañar otra.</td></tr><tr><td>Durabilidad</td><td>Permanencia</td><td>Lo confirmado queda guardado.</td></tr></table></section>
-<section id="simulador" class="card"><h2>Simulador visual: transferencia bancaria</h2><p>Use los botones para mostrar qué pasa con <b>BEGIN</b>, <b>COMMIT</b> y <b>ROLLBACK</b>.</p><div class="simulator"><div class="accounts"><div class="account"><h3>Cuenta A</h3><div class="money" id="cuentaA">$1.000.000</div></div><div class="account"><h3>Cuenta B</h3><div class="money" id="cuentaB">$200.000</div></div></div><div class="actions"><button class="begin" onclick="beginTx()">1. BEGIN</button><button class="save" onclick="transferir()">2. Ejecutar transferencia</button><button class="commit" onclick="commitTx()">3. COMMIT</button><button class="rollback" onclick="rollbackTx()">ROLLBACK</button><button class="reset" onclick="resetSim()">Reiniciar</button></div><div class="log" id="simLog">Listo para iniciar la transacción...</div></div></section>
-<section id="codigo" class="card"><h2>Práctica guiada con código</h2><p>Seleccione el motor y el paso. El código aparece al lado para copiarlo y ejecutarlo.</p><div class="tabs"><button class="tab active" onclick="selectEngine('pg')">PostgreSQL</button><button class="tab" onclick="selectEngine('sql')">SQL Server</button></div><div class="grid"><div><div id="stepButtons" class="stepList"></div></div><div><h3 id="codeTitle">Código</h3><pre id="codeArea" class="codeBox"></pre><button class="copy" onclick="copyCode()">Copiar código</button><p id="copyMsg"></p></div></div></section>
-<section id="quiz" class="card"><h2>Mini quiz interactivo</h2><div class="quizQ"><b>1. ¿Qué comando confirma los cambios?</b><button onclick="answer(this,true)">COMMIT</button><button onclick="answer(this,false)">ROLLBACK</button><button onclick="answer(this,false)">SELECT</button></div><div class="quizQ"><b>2. ¿Qué significa atomicidad?</b><button onclick="answer(this,false)">Que los datos se ordenan alfabéticamente.</button><button onclick="answer(this,true)">Que la operación se hace completa o no se hace.</button><button onclick="answer(this,false)">Que solo se puede usar una tabla.</button></div><div class="quizQ"><b>3. ¿Para qué sirve ROLLBACK?</b><button onclick="answer(this,true)">Para deshacer cambios no confirmados.</button><button onclick="answer(this,false)">Para crear una tabla.</button><button onclick="answer(this,false)">Para consultar registros.</button></div></section>
-<section id="tarea" class="card"><h2>Aplicación al proyecto</h2><div class="highlight"><p><b>Para casa:</b> cada grupo debe identificar una operación crítica de su proyecto y protegerla con una transacción.</p></div><table><tr><th>Debe entregar</th><th>Descripción</th></tr><tr><td>Escenario crítico</td><td>Ejemplo: venta, matrícula, pago, reserva, comparendo, cita, préstamo.</td></tr><tr><td>Transacción</td><td>Uso de BEGIN, COMMIT y ROLLBACK.</td></tr><tr><td>Prueba exitosa</td><td>Mostrar que los datos se guardan correctamente.</td></tr><tr><td>Prueba fallida</td><td>Mostrar que los datos se revierten.</td></tr><tr><td>Explicación</td><td>Indicar cómo protege la integridad de la base de datos.</td></tr></table><p><b>Frase de cierre:</b> “Una base de datos profesional no solo guarda datos; también protege la consistencia de la información.”</p></section>
-</main><div class="footer">Unidades Tecnológicas de Santander — Motores de Bases de Datos — Profesor Pedro Ramírez García</div>
+<section class="card" id="concepto">
+  <h2>1. Concepto en lenguaje natural</h2>
+  <div class="two">
+    <div>
+      <h3>¿Qué es una transacción?</h3>
+      <p>Una transacción es un conjunto de operaciones que deben ejecutarse como una sola unidad. En palabras sencillas: <b>todo se guarda o nada se guarda</b>.</p>
+      <div class="callout"><b>Ejemplo:</b> Si se realiza una transferencia bancaria, no sirve descontar dinero de una cuenta si no se suma en la otra.</div>
+      <button class="btn" onclick="toggleBox('acidBox')">Ver propiedades ACID</button>
+      <div id="acidBox" class="callout" style="display:none">
+        <p><b>A - Atomicidad:</b> todo o nada.</p>
+        <p><b>C - Consistencia:</b> la base de datos queda válida.</p>
+        <p><b>I - Aislamiento:</b> una operación no interfiere con otra.</p>
+        <p><b>D - Durabilidad:</b> lo confirmado permanece.</p>
+      </div>
+    </div>
+    <div>
+      <h3>Comandos principales</h3>
+      <span class="pill">BEGIN / START TRANSACTION</span>
+      <span class="pill">COMMIT</span>
+      <span class="pill">ROLLBACK</span>
+      <span class="pill">SAVEPOINT</span>
+      <table class="fakeTable"><tr><th>Comando</th><th>Significado</th></tr><tr><td>BEGIN</td><td>Inicia la transacción.</td></tr><tr><td>COMMIT</td><td>Confirma los cambios.</td></tr><tr><td>ROLLBACK</td><td>Deshace los cambios.</td></tr><tr><td>SAVEPOINT</td><td>Crea un punto de regreso.</td></tr></table>
+    </div>
+  </div>
+  <div class="videoBox">
+    <h3>Video de apoyo sugerido</h3>
+    <p>Puede buscar y reproducir un video corto sobre ACID y transacciones. Botón directo a YouTube:</p>
+    <a class="btn blue" target="_blank" href="https://www.youtube.com/results?search_query=transacciones+bases+de+datos+acid+commit+rollback">Abrir videos sobre transacciones ACID</a>
+  </div>
+  <button class="btn green" onclick="complete('concepto')">Marcar concepto como visto</button>
+</section>
+<section class="card" id="simulador">
+  <h2>2. Simulador visual: transferencia bancaria</h2>
+  <p>Este simulador no modifica una base de datos real, pero ayuda a entender lo que hace una transacción.</p>
+  <div class="sim">
+    <div class="account"><h3>Cuenta origen</h3><div id="cuentaA" class="money">$1.000.000</div><p>Carlos</p></div>
+    <div class="account"><h3>Cuenta destino</h3><div id="cuentaB" class="money">$500.000</div><p>María</p></div>
+  </div>
+  <div class="arrow">➡️ Transferencia: $200.000</div>
+  <div class="buttonRow">
+    <button class="btn" onclick="startTx()">1. BEGIN</button>
+    <button class="btn blue" onclick="doTransfer()">2. Ejecutar operaciones</button>
+    <button class="btn green" onclick="commitTx()">3. COMMIT</button>
+    <button class="btn red" onclick="rollbackTx()">3. ROLLBACK</button>
+    <button class="btn gray" onclick="resetSim()">Reiniciar</button>
+  </div>
+  <div id="simLog" class="log">Estado inicial: ninguna transacción iniciada.</div>
+  <button class="btn green" onclick="complete('simulador')">Marcar simulador como realizado</button>
+</section>
+<section class="card" id="laboratorio">
+  <h2>3. Laboratorio guiado paso a paso</h2>
+  <p><b>Escenario:</b> sistema de ventas sencillo. Se registra una venta y se descuenta inventario. Si algo falla, se revierte la operación.</p>
+  <div class="tabs"><button class="tab active" onclick="showDb('pg')">PostgreSQL</button><button class="tab" onclick="showDb('my')">MySQL</button></div>
+  <div id="pg" class="panel active">
+    <h3>Laboratorio en PostgreSQL</h3>
+    <div class="callout ok"><b>Recomendación:</b> ejecutar paso por paso en pgAdmin o consola psql. Primero pruebe COMMIT y luego ROLLBACK.</div>
+    <div class="step"><div class="stepHead"><h3><span class="num">1</span>Paso 1 — Crear base de datos</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">Cree un espacio limpio para el laboratorio.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('pg_1')">Copiar código</button></div><pre><code id="pg_1">CREATE DATABASE taller_transacciones;
+-- En psql, conectarse con:
+\c taller_transacciones;</code></pre></div></div>
+<div class="step"><div class="stepHead"><h3><span class="num">2</span>Paso 2 — Crear tablas</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">Una tabla guarda cuentas, otra productos, otra ventas y otra detalle de ventas.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('pg_2')">Copiar código</button></div><pre><code id="pg_2">CREATE TABLE cuentas (
+    id_cuenta SERIAL PRIMARY KEY,
+    cliente VARCHAR(100) NOT NULL,
+    saldo NUMERIC(12,2) NOT NULL
+);
+
+CREATE TABLE productos (
+    id_producto SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    stock INT NOT NULL,
+    precio NUMERIC(12,2) NOT NULL
+);
+
+CREATE TABLE ventas (
+    id_venta SERIAL PRIMARY KEY,
+    cliente VARCHAR(100),
+    total NUMERIC(12,2),
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE detalle_ventas (
+    id_detalle SERIAL PRIMARY KEY,
+    id_venta INT REFERENCES ventas(id_venta),
+    id_producto INT REFERENCES productos(id_producto),
+    cantidad INT,
+    subtotal NUMERIC(12,2)
+);</code></pre></div></div>
+<div class="step"><div class="stepHead"><h3><span class="num">3</span>Paso 3 — Insertar datos iniciales</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">Estos datos permiten probar ventas y descuentos de stock.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('pg_3')">Copiar código</button></div><pre><code id="pg_3">INSERT INTO cuentas (cliente, saldo) VALUES
+(&#x27;Carlos Pérez&#x27;, 1000000),
+(&#x27;María López&#x27;, 500000);
+
+INSERT INTO productos (nombre, stock, precio) VALUES
+(&#x27;Mouse inalámbrico&#x27;, 10, 45000),
+(&#x27;Teclado mecánico&#x27;, 5, 120000);
+
+SELECT * FROM cuentas;
+SELECT * FROM productos;</code></pre></div></div>
+<div class="step"><div class="stepHead"><h3><span class="num">4</span>Paso 4 — Transacción con COMMIT</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">Se registra una venta, se descuenta stock y se descuenta saldo. Si todo sale bien, COMMIT confirma.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('pg_4')">Copiar código</button></div><pre><code id="pg_4">BEGIN;
+
+INSERT INTO ventas (cliente, total)
+VALUES (&#x27;Carlos Pérez&#x27;, 90000)
+RETURNING id_venta;
+
+-- Suponga que el id_venta generado fue 1
+INSERT INTO detalle_ventas (id_venta, id_producto, cantidad, subtotal)
+VALUES (1, 1, 2, 90000);
+
+UPDATE productos
+SET stock = stock - 2
+WHERE id_producto = 1;
+
+UPDATE cuentas
+SET saldo = saldo - 90000
+WHERE cliente = &#x27;Carlos Pérez&#x27;;
+
+COMMIT;
+
+SELECT * FROM ventas;
+SELECT * FROM detalle_ventas;
+SELECT * FROM productos;
+SELECT * FROM cuentas;</code></pre></div></div>
+<div class="step"><div class="stepHead"><h3><span class="num">5</span>Paso 5 — Transacción con ROLLBACK</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">Ahora se simula un error: se inicia la operación, pero se decide revertir.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('pg_5')">Copiar código</button></div><pre><code id="pg_5">BEGIN;
+
+INSERT INTO ventas (cliente, total)
+VALUES (&#x27;María López&#x27;, 240000)
+RETURNING id_venta;
+
+-- Suponga que el id_venta generado fue 2
+INSERT INTO detalle_ventas (id_venta, id_producto, cantidad, subtotal)
+VALUES (2, 2, 2, 240000);
+
+UPDATE productos
+SET stock = stock - 2
+WHERE id_producto = 2;
+
+-- Algo salió mal: el cliente no autorizó el pago.
+ROLLBACK;
+
+-- Verifique que no se guardó la venta ni el descuento.
+SELECT * FROM ventas;
+SELECT * FROM productos;</code></pre></div></div>
+<div class="step"><div class="stepHead"><h3><span class="num">6</span>Paso 6 — SAVEPOINT</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">SAVEPOINT permite regresar a un punto sin cancelar toda la transacción.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('pg_6')">Copiar código</button></div><pre><code id="pg_6">BEGIN;
+
+UPDATE cuentas
+SET saldo = saldo - 50000
+WHERE cliente = &#x27;Carlos Pérez&#x27;;
+
+SAVEPOINT punto_descuento;
+
+UPDATE productos
+SET stock = stock - 20
+WHERE id_producto = 1;
+
+-- El descuento de stock fue exagerado, volvemos al punto anterior.
+ROLLBACK TO SAVEPOINT punto_descuento;
+
+COMMIT;
+
+SELECT * FROM cuentas;
+SELECT * FROM productos;</code></pre></div></div>
+<div class="step"><div class="stepHead"><h3><span class="num">7</span>Paso 7 — Pregunta de análisis</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">El estudiante debe explicar qué ocurrió en cada caso.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('pg_7')">Copiar código</button></div><pre><code id="pg_7">-- Responda en clase:
+-- 1. ¿Qué se guardó con COMMIT?
+-- 2. ¿Qué se deshizo con ROLLBACK?
+-- 3. ¿Por qué SAVEPOINT no canceló toda la transacción?
+-- 4. ¿Dónde aplicaría esto en su proyecto?</code></pre></div></div>
+  </div>
+  <div id="my" class="panel">
+    <h3>Laboratorio en MySQL</h3>
+    <div class="callout ok"><b>Recomendación:</b> ejecutar paso por paso en MySQL Workbench. Recuerde que para transacciones conviene usar motor InnoDB.</div>
+    <div class="step"><div class="stepHead"><h3><span class="num">1</span>Paso 1 — Crear base de datos</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">Cree un espacio limpio para el laboratorio.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('my_1')">Copiar código</button></div><pre><code id="my_1">CREATE DATABASE taller_transacciones;
+USE taller_transacciones;</code></pre></div></div>
+<div class="step"><div class="stepHead"><h3><span class="num">2</span>Paso 2 — Crear tablas</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">En MySQL se usa AUTO_INCREMENT. Se recomienda motor InnoDB para transacciones.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('my_2')">Copiar código</button></div><pre><code id="my_2">CREATE TABLE cuentas (
+    id_cuenta INT AUTO_INCREMENT PRIMARY KEY,
+    cliente VARCHAR(100) NOT NULL,
+    saldo DECIMAL(12,2) NOT NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE productos (
+    id_producto INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    stock INT NOT NULL,
+    precio DECIMAL(12,2) NOT NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE ventas (
+    id_venta INT AUTO_INCREMENT PRIMARY KEY,
+    cliente VARCHAR(100),
+    total DECIMAL(12,2),
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE detalle_ventas (
+    id_detalle INT AUTO_INCREMENT PRIMARY KEY,
+    id_venta INT,
+    id_producto INT,
+    cantidad INT,
+    subtotal DECIMAL(12,2),
+    FOREIGN KEY (id_venta) REFERENCES ventas(id_venta),
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+) ENGINE=InnoDB;</code></pre></div></div>
+<div class="step"><div class="stepHead"><h3><span class="num">3</span>Paso 3 — Insertar datos iniciales</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">Estos datos permiten probar ventas y descuentos de stock.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('my_3')">Copiar código</button></div><pre><code id="my_3">INSERT INTO cuentas (cliente, saldo) VALUES
+(&#x27;Carlos Pérez&#x27;, 1000000),
+(&#x27;María López&#x27;, 500000);
+
+INSERT INTO productos (nombre, stock, precio) VALUES
+(&#x27;Mouse inalámbrico&#x27;, 10, 45000),
+(&#x27;Teclado mecánico&#x27;, 5, 120000);
+
+SELECT * FROM cuentas;
+SELECT * FROM productos;</code></pre></div></div>
+<div class="step"><div class="stepHead"><h3><span class="num">4</span>Paso 4 — Transacción con COMMIT</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">Se registra una venta, se descuenta stock y se descuenta saldo. Si todo sale bien, COMMIT confirma.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('my_4')">Copiar código</button></div><pre><code id="my_4">START TRANSACTION;
+
+INSERT INTO ventas (cliente, total)
+VALUES (&#x27;Carlos Pérez&#x27;, 90000);
+
+SET @id_venta = LAST_INSERT_ID();
+
+INSERT INTO detalle_ventas (id_venta, id_producto, cantidad, subtotal)
+VALUES (@id_venta, 1, 2, 90000);
+
+UPDATE productos
+SET stock = stock - 2
+WHERE id_producto = 1;
+
+UPDATE cuentas
+SET saldo = saldo - 90000
+WHERE cliente = &#x27;Carlos Pérez&#x27;;
+
+COMMIT;
+
+SELECT * FROM ventas;
+SELECT * FROM detalle_ventas;
+SELECT * FROM productos;
+SELECT * FROM cuentas;</code></pre></div></div>
+<div class="step"><div class="stepHead"><h3><span class="num">5</span>Paso 5 — Transacción con ROLLBACK</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">Ahora se simula un error: se inicia la operación, pero se decide revertir.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('my_5')">Copiar código</button></div><pre><code id="my_5">START TRANSACTION;
+
+INSERT INTO ventas (cliente, total)
+VALUES (&#x27;María López&#x27;, 240000);
+
+SET @id_venta = LAST_INSERT_ID();
+
+INSERT INTO detalle_ventas (id_venta, id_producto, cantidad, subtotal)
+VALUES (@id_venta, 2, 2, 240000);
+
+UPDATE productos
+SET stock = stock - 2
+WHERE id_producto = 2;
+
+-- Algo salió mal: el cliente no autorizó el pago.
+ROLLBACK;
+
+-- Verifique que no se guardó la venta ni el descuento.
+SELECT * FROM ventas;
+SELECT * FROM productos;</code></pre></div></div>
+<div class="step"><div class="stepHead"><h3><span class="num">6</span>Paso 6 — SAVEPOINT</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">SAVEPOINT permite regresar a un punto sin cancelar toda la transacción.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('my_6')">Copiar código</button></div><pre><code id="my_6">START TRANSACTION;
+
+UPDATE cuentas
+SET saldo = saldo - 50000
+WHERE cliente = &#x27;Carlos Pérez&#x27;;
+
+SAVEPOINT punto_descuento;
+
+UPDATE productos
+SET stock = stock - 20
+WHERE id_producto = 1;
+
+-- El descuento de stock fue exagerado, volvemos al punto anterior.
+ROLLBACK TO SAVEPOINT punto_descuento;
+
+COMMIT;
+
+SELECT * FROM cuentas;
+SELECT * FROM productos;</code></pre></div></div>
+<div class="step"><div class="stepHead"><h3><span class="num">7</span>Paso 7 — Pregunta de análisis</h3><span>Click para abrir/cerrar</span></div><div class="stepBody"><p class="hint">El estudiante debe explicar qué ocurrió en cada caso.</p><div class="codeTools"><span>SQL</span><button class="copy" onclick="copyCode('my_7')">Copiar código</button></div><pre><code id="my_7">-- Responda en clase:
+-- 1. ¿Qué se guardó con COMMIT?
+-- 2. ¿Qué se deshizo con ROLLBACK?
+-- 3. ¿Por qué SAVEPOINT no canceló toda la transacción?
+-- 4. ¿Dónde aplicaría esto en su proyecto?</code></pre></div></div>
+  </div>
+  <button class="btn green" onclick="complete('laboratorio')">Marcar laboratorio como realizado</button>
+</section>
+<section class="card" id="quiz">
+  <h2>4. Quiz rápido de comprensión</h2>
+  <p>Responda y revise inmediatamente. Sirve para cerrar la práctica antes de pasar a la actividad del proyecto.</p>
+  <div class="quizQ" data-answer="b"><b>1. ¿Qué hace COMMIT?</b><label class="option" onclick="answer(this,'a')">Deshace todos los cambios.</label><label class="option" onclick="answer(this,'b')">Confirma definitivamente los cambios.</label><label class="option" onclick="answer(this,'c')">Elimina la base de datos.</label></div>
+  <div class="quizQ" data-answer="a"><b>2. ¿Qué hace ROLLBACK?</b><label class="option" onclick="answer(this,'a')">Revierte los cambios no confirmados.</label><label class="option" onclick="answer(this,'b')">Crea una tabla.</label><label class="option" onclick="answer(this,'c')">Aumenta el inventario siempre.</label></div>
+  <div class="quizQ" data-answer="c"><b>3. ¿Qué significa Atomicidad?</b><label class="option" onclick="answer(this,'a')">Que todos pueden editar al mismo tiempo.</label><label class="option" onclick="answer(this,'b')">Que la base de datos no tiene errores de sintaxis.</label><label class="option" onclick="answer(this,'c')">Que se ejecuta todo o no se ejecuta nada.</label></div>
+  <div class="quizQ" data-answer="b"><b>4. ¿Dónde aplicaría una transacción?</b><label class="option" onclick="answer(this,'a')">En una consulta SELECT simple.</label><label class="option" onclick="answer(this,'b')">En una operación crítica con varios pasos.</label><label class="option" onclick="answer(this,'c')">Solo para cambiar colores de una página.</label></div>
+  <button class="btn blue" onclick="scoreQuiz()">Ver resultado</button>
+  <div id="quizResult" class="resultBox">Resultado pendiente.</div>
+  <button class="btn green" onclick="complete('quiz')">Marcar quiz como realizado</button>
+</section>
+<section class="card" id="proyecto">
+  <h2>5. Aplicación al proyecto de cada grupo</h2>
+  <p>Después del taller, cada grupo debe llevar este mismo concepto a su proyecto. No se trata de copiar el ejemplo de ventas, sino de identificar un proceso crítico real.</p>
+  <div class="grid">
+    <div class="mini"><strong>Biblioteca</strong><br>Prestar libro + descontar disponibilidad + registrar historial.</div>
+    <div class="mini"><strong>Clínica</strong><br>Crear cita + reservar cupo + registrar pago o autorización.</div>
+    <div class="mini"><strong>Inventario</strong><br>Venta + salida de stock + registro de movimiento.</div>
+  </div>
+  <h3>Mini formato de planeación</h3>
+  <label>1. Proceso crítico de mi proyecto:</label><textarea id="f1" rows="2" placeholder="Ejemplo: registro de matrícula, reserva, préstamo, compra, pago..."></textarea>
+  <label>2. Tablas involucradas:</label><textarea id="f2" rows="2" placeholder="Ejemplo: estudiantes, matriculas, pagos..."></textarea>
+  <label>3. ¿Qué pasaría si falla a la mitad?</label><textarea id="f3" rows="2"></textarea>
+  <label>4. ¿Dónde usaría COMMIT y ROLLBACK?</label><textarea id="f4" rows="2"></textarea>
+  <button class="btn blue" onclick="generarPlan()">Generar resumen del grupo</button>
+  <button class="btn green" onclick="copyPlan()">Copiar resumen</button>
+  <div id="plan" class="resultBox">Aquí aparecerá el resumen para entregar o socializar.</div>
+  <h3>Lista de entrega para la próxima clase</h3>
+  <div class="checklist">
+    <label><input type="checkbox" onchange="updateChecklist()"> Identifiqué un proceso crítico de mi proyecto.</label>
+    <label><input type="checkbox" onchange="updateChecklist()"> Definí mínimo dos tablas involucradas.</label>
+    <label><input type="checkbox" onchange="updateChecklist()"> Probé COMMIT.</label>
+    <label><input type="checkbox" onchange="updateChecklist()"> Probé ROLLBACK.</label>
+    <label><input type="checkbox" onchange="updateChecklist()"> Expliqué qué problema real resuelve.</label>
+  </div>
+  <div id="checkResult" class="callout">Avance: 0 de 5 criterios.</div>
+  <button class="btn green" onclick="complete('proyecto')">Marcar aplicación como realizada</button>
+</section>
+</main>
+<footer>
+  <b>Unidades Tecnológicas de Santander</b><br>
+  Motores de Bases de Datos | Profesor Pedro Ramírez García<br>
+  “Una transacción protege la integridad de la información cuando un proceso tiene varios pasos.”
+</footer>
+<div id="toast" class="toast">Código copiado</div>
 <script>
-function go(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
-let a0=1000000,b0=200000,a=a0,b=b0,started=false,changed=false,committed=false;
-function money(n){return '$'+n.toLocaleString('es-CO');}
-function updateMoney(){document.getElementById('cuentaA').textContent=money(a);document.getElementById('cuentaB').textContent=money(b);}
-function log(t){document.getElementById('simLog').textContent=t;}
-function beginTx(){started=true;changed=false;committed=false; a=a0;b=b0;updateMoney();log('BEGIN;\nSe inicia la transacción. Aún no hay cambios confirmados.');}
-function transferir(){if(!started){log('Primero debe iniciar con BEGIN.');return;} a-=300000;b+=300000;changed=true;updateMoney();log('UPDATE cuenta_origen SET saldo = saldo - 300000;\nUPDATE cuenta_destino SET saldo = saldo + 300000;\nLa transferencia está pendiente de COMMIT o ROLLBACK.');}
-function commitTx(){if(!started||!changed){log('No hay una transacción con cambios para confirmar.');return;} a0=a;b0=b;committed=true;started=false;log('COMMIT;\nLos cambios quedaron confirmados definitivamente.');}
-function rollbackTx(){if(!started){log('No hay transacción activa para deshacer.');return;} a=a0;b=b0;updateMoney();started=false;changed=false;log('ROLLBACK;\nLos cambios fueron cancelados. Las cuentas regresan al estado anterior.');}
-function resetSim(){a0=1000000;b0=200000;a=a0;b=b0;started=false;changed=false;committed=false;updateMoney();log('Simulador reiniciado. Listo para iniciar la transacción...');}
-const codes={
-pg:[
-['1. Crear tablas',`CREATE TABLE cuentas (\n    id_cuenta SERIAL PRIMARY KEY,\n    titular VARCHAR(100),\n    saldo NUMERIC(12,2)\n);\n\nINSERT INTO cuentas (titular, saldo) VALUES\n('Carlos', 1000000),\n('María', 200000);\n\nSELECT * FROM cuentas;`],
-['2. Transacción exitosa',`BEGIN;\n\nUPDATE cuentas\nSET saldo = saldo - 300000\nWHERE id_cuenta = 1;\n\nUPDATE cuentas\nSET saldo = saldo + 300000\nWHERE id_cuenta = 2;\n\nCOMMIT;\n\nSELECT * FROM cuentas;`],
-['3. Transacción con ROLLBACK',`BEGIN;\n\nUPDATE cuentas\nSET saldo = saldo - 500000\nWHERE id_cuenta = 1;\n\n-- Simulamos un error o decisión de cancelar\nROLLBACK;\n\nSELECT * FROM cuentas;`],
-['4. SAVEPOINT',`BEGIN;\n\nUPDATE cuentas SET saldo = saldo - 100000 WHERE id_cuenta = 1;\nSAVEPOINT punto_1;\n\nUPDATE cuentas SET saldo = saldo - 900000 WHERE id_cuenta = 1;\n\nROLLBACK TO punto_1;\nCOMMIT;\n\nSELECT * FROM cuentas;`]
-],
-sql:[
-['1. Crear tablas',`CREATE TABLE cuentas (\n    id_cuenta INT IDENTITY(1,1) PRIMARY KEY,\n    titular VARCHAR(100),\n    saldo DECIMAL(12,2)\n);\n\nINSERT INTO cuentas (titular, saldo) VALUES\n('Carlos', 1000000),\n('María', 200000);\n\nSELECT * FROM cuentas;`],
-['2. Transacción exitosa',`BEGIN TRANSACTION;\n\nUPDATE cuentas\nSET saldo = saldo - 300000\nWHERE id_cuenta = 1;\n\nUPDATE cuentas\nSET saldo = saldo + 300000\nWHERE id_cuenta = 2;\n\nCOMMIT TRANSACTION;\n\nSELECT * FROM cuentas;`],
-['3. Transacción con ROLLBACK',`BEGIN TRANSACTION;\n\nUPDATE cuentas\nSET saldo = saldo - 500000\nWHERE id_cuenta = 1;\n\n-- Simulamos error o cancelación\nROLLBACK TRANSACTION;\n\nSELECT * FROM cuentas;`],
-['4. TRY CATCH',`BEGIN TRY\n    BEGIN TRANSACTION;\n\n    UPDATE cuentas SET saldo = saldo - 300000 WHERE id_cuenta = 1;\n    UPDATE cuentas SET saldo = saldo + 300000 WHERE id_cuenta = 2;\n\n    COMMIT TRANSACTION;\nEND TRY\nBEGIN CATCH\n    ROLLBACK TRANSACTION;\n    PRINT 'Error: se deshizo la transacción';\nEND CATCH;`]
-]
-};
-let engine='pg';
-function selectEngine(e){engine=e;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));event.target.classList.add('active');renderSteps();}
-function renderSteps(){const box=document.getElementById('stepButtons');box.innerHTML='';codes[engine].forEach((c,i)=>{let b=document.createElement('button');b.className='stepBtn';b.textContent=c[0];b.onclick=()=>showCode(i,b);box.appendChild(b);});showCode(0,box.firstChild);}
-function showCode(i,btn){document.querySelectorAll('.stepBtn').forEach(x=>x.classList.remove('active')); if(btn)btn.classList.add('active');document.getElementById('codeTitle').textContent=codes[engine][i][0];document.getElementById('codeArea').textContent=codes[engine][i][1];document.getElementById('copyMsg').textContent='';}
-function copyCode(){navigator.clipboard.writeText(document.getElementById('codeArea').textContent).then(()=>{document.getElementById('copyMsg').textContent='Código copiado.'}).catch(()=>{document.getElementById('copyMsg').textContent='Seleccione y copie manualmente.'});}
-function answer(btn,ok){const q=btn.parentElement; q.querySelectorAll('button').forEach(b=>b.disabled=true);btn.classList.add(ok?'correct':'wrong'); if(!ok){q.querySelectorAll('button').forEach(b=>{if(b.onclick.toString().includes('true')) b.classList.add('correct')})}}
-renderSteps();updateMoney();
+let completed = new Set();
+function go(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});document.querySelectorAll('.navBtn').forEach(b=>b.classList.remove('active'));}
+function complete(id){completed.add(id);document.getElementById('bar').style.width=Math.min(100,completed.size*16.7)+'%';toast('Sección marcada como realizada');}
+function toggleBox(id){let e=document.getElementById(id);e.style.display=e.style.display==='none'?'block':'none'}
+function showDb(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');event.target.classList.add('active')}
+function toggleStep(el){el.parentElement.classList.toggle('open')}
+function copyCode(id){navigator.clipboard.writeText(document.getElementById(id).innerText);toast('Código copiado al portapapeles')}
+function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+let A=1000000,B=500000,tempA=A,tempB=B,tx=false,done=false;
+function money(n){return '$'+n.toLocaleString('es-CO')}
+function renderMoney(){document.getElementById('cuentaA').textContent=money(tx?tempA:A);document.getElementById('cuentaB').textContent=money(tx?tempB:B)}
+function startTx(){tx=true;done=false;tempA=A;tempB=B;renderMoney();document.getElementById('simLog').textContent='BEGIN;\nTransacción iniciada. Los cambios aún no son definitivos.'}
+function doTransfer(){if(!tx){toast('Primero inicie BEGIN');return} if(done){toast('La operación ya fue ejecutada');return} tempA-=200000;tempB+=200000;done=true;renderMoney();document.getElementById('simLog').textContent+='\nUPDATE cuenta_origen: -200000\nUPDATE cuenta_destino: +200000\nLos cambios están pendientes de confirmar.'}
+function commitTx(){if(!tx||!done){toast('Debe iniciar y ejecutar la operación');return} A=tempA;B=tempB;tx=false;renderMoney();document.getElementById('simLog').textContent+='\nCOMMIT;\nCambios confirmados definitivamente.'}
+function rollbackTx(){if(!tx){toast('No hay transacción activa');return} tempA=A;tempB=B;tx=false;renderMoney();document.getElementById('simLog').textContent+='\nROLLBACK;\nSe deshicieron los cambios. Todo volvió al estado inicial.'}
+function resetSim(){A=1000000;B=500000;tempA=A;tempB=B;tx=false;done=false;renderMoney();document.getElementById('simLog').textContent='Estado inicial: ninguna transacción iniciada.'}
+function answer(el,v){let q=el.closest('.quizQ');let ans=q.dataset.answer;q.querySelectorAll('.option').forEach(o=>o.classList.remove('correct','wrong')); if(v===ans){el.classList.add('correct');q.dataset.ok='1'}else{el.classList.add('wrong');q.dataset.ok='0'}}
+function scoreQuiz(){let qs=document.querySelectorAll('.quizQ');let ok=[...qs].filter(q=>q.dataset.ok==='1').length;document.getElementById('quizResult').textContent='Resultado: '+ok+' de '+qs.length+' respuestas correctas.'}
+function generarPlan(){let txt='PLAN DE TRANSACCIÓN PARA EL PROYECTO\n\nProceso crítico: '+document.getElementById('f1').value+'\nTablas involucradas: '+document.getElementById('f2').value+'\nRiesgo si falla: '+document.getElementById('f3').value+'\nUso de COMMIT/ROLLBACK: '+document.getElementById('f4').value;document.getElementById('plan').textContent=txt}
+function copyPlan(){navigator.clipboard.writeText(document.getElementById('plan').textContent);toast('Resumen copiado')}
+function updateChecklist(){let ch=document.querySelectorAll('.checklist input');let ok=[...ch].filter(c=>c.checked).length;document.getElementById('checkResult').textContent='Avance: '+ok+' de '+ch.length+' criterios.'}
+document.addEventListener('click',function(e){if(e.target.closest('.stepHead')) toggleStep(e.target.closest('.stepHead'))})
 </script>
 </body>
 </html>
